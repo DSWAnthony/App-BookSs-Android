@@ -4,7 +4,11 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -36,27 +40,40 @@ fun BooksApp(
     navController: NavHostController,
     authViewModel: AuthViewModel
 ){
+    Screen {
+        NavHost(navController = navController, startDestination = Screens.SplashScreen.routes ){
+            composable(Screens.LoginScreen.routes){
+                LoginScreen(navController,authViewModel)
+            }
 
-    NavHost(navController = navController, startDestination = Screens.SplashScreen.routes ){
-        composable(Screens.LoginScreen.routes){
-            LoginScreen(navController,authViewModel)
+            composable(Screens.SignUpScreen.routes){
+                SignUpScreen(navController,authViewModel)
+            }
+
+            composable(Screens.SplashScreen.routes){
+                SplashScreen(navController = navController, authViewModel = authViewModel)
+            }
+
+            composable(Screens.NavigationApp.routes) {
+                NavigationApp(
+                    navMainController = navController,
+                    viewModel = authViewModel,
+                )
+            }
+
         }
+    }
 
-        composable(Screens.SignUpScreen.routes){
-            SignUpScreen(navController,authViewModel)
+}
+@Composable
+fun Screen(content: @Composable () -> Unit) {
+    BookSsTheme {
+        Surface(
+            modifier = Modifier.fillMaxSize(),
+            color = MaterialTheme.colorScheme.background
+        ) {
+            content()
         }
-
-        composable(Screens.SplashScreen.routes){
-            SplashScreen(navController = navController, authViewModel = authViewModel)
-        }
-
-        composable(Screens.NavigationApp.routes) {
-            NavigationApp(
-                navController = navController,
-                viewModel = authViewModel,
-            )
-        }
-
     }
 }
 

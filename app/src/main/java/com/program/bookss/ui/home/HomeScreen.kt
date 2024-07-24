@@ -2,7 +2,10 @@ package com.program.bookss.ui.home
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.pdf.PdfRenderer
 import android.net.Uri
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -22,7 +25,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
@@ -48,27 +50,30 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.viewinterop.AndroidView
 import androidx.compose.ui.window.Dialog
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavHostController
+import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import coil.transform.RoundedCornersTransformation
 import com.program.bookss.domain.model.Book
 import com.program.bookss.ui.Authentication.BookViewModel
 import com.program.bookss.ui.MyAppRoute
+import com.program.bookss.ui.MyAppTopAppBar
 import com.program.bookss.utils.Response
 
 @Composable
 fun HomeScreen(
     booksState: Response<List<Book>>,
- navController: NavHostController,
+    navController: NavHostController,
     bookViewModel: BookViewModel,
+    role : String
 ){
     val context = LocalContext.current
     var showDialog by remember { mutableStateOf(false) }
@@ -80,6 +85,9 @@ fun HomeScreen(
     var description by remember { mutableStateOf("") }
 
     Scaffold(
+        topBar = {
+            MyAppTopAppBar(role)
+        },
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
@@ -89,7 +97,7 @@ fun HomeScreen(
                     } else {
                         Toast.makeText(context, "Permiso denegado", Toast.LENGTH_SHORT).show()
                     }
-                },
+                }, modifier = Modifier.padding(bottom = 70.dp),
             ) {
                 Icon(imageVector = Icons.Default.Add, contentDescription = "Add Photo")
             }
@@ -107,21 +115,24 @@ fun HomeScreen(
                     is Response.Success -> {
                         val booksList = booksState.data
 
-                        ClickableText(
-                            text = AnnotatedString("Ver Todo >"),
+
+                        Button(
                             onClick = {
                                 navController.navigate(MyAppRoute.Books)
-                            },
-                            style = TextStyle(
-                                fontSize = 15.sp,
-                                fontFamily = FontFamily.Default,
-                                color = Color.Gray
-                            ),
+                                      },
                             modifier = Modifier
                                 .align(Alignment.End)
                                 .padding(end = 15.dp)
-                        )
-
+                        ) {
+                            Text(
+                                text = "Ver Todo >",
+                                style = MaterialTheme.typography.bodySmall,
+                                fontFamily = FontFamily.Default,
+                                fontSize = 15.sp,
+                                color = Color.White,
+                                textAlign = TextAlign.Center
+                            )
+                        }
                         LazyRow(modifier = Modifier.fillMaxWidth()) {
                             items(booksList) { book ->
                                 if (book.state) {
@@ -131,7 +142,7 @@ fun HomeScreen(
                         }
                     }
                     is Response.Error -> {
-                        Toast.makeText(context, "Error al cargar libros: ${(booksState as Response.Error).message}", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "Error al cargar libros: ${(booksState).message}", Toast.LENGTH_SHORT).show()
                     }
                 }
             }
@@ -186,7 +197,7 @@ fun BookItem(book: Book,showEditButton: Boolean,bookViewModel: BookViewModel) {
             )
 
             if (showEditButton) {
-                OptionsButtons(bookViewModel,book)
+               OptionsButtons(bookViewModel,book)
             }
         }
 
@@ -214,28 +225,18 @@ fun CoilImage(
     imageUrl: String,
     contentDescription: String?,
     modifier: Modifier = Modifier,
-    contentScale: ContentScale = ContentScale.Fit
+    contentScale: ContentScale = ContentScale.Crop
 ) {
-
-
-    val painter = rememberAsyncImagePainter(
-        ImageRequest
-            .Builder(LocalContext.current)
-            .data(data = imageUrl)
-            .apply {
-                crossfade(true)
-                transformations(RoundedCornersTransformation(20f))
-                // Puedes ajustar el tamaño aquí si es necesario
-                size(1024) // Ajusta según sea necesario
-            }
-            .build()
-    )
-
-    Image(
-        painter = painter,
+    val context= LocalContext.current
+    AsyncImage(
+        model = ImageRequest.Builder(context)
+            .data(imageUrl)
+            .crossfade(true)
+            .transformations(RoundedCornersTransformation(20f))
+            .build(),
         contentDescription = contentDescription,
         modifier = modifier.padding(2.dp),
-        contentScale = contentScale,
+        contentScale = contentScale
     )
 }
 
@@ -316,7 +317,7 @@ fun BookUploadDialog(
                     )
                 }
                 Button(
-                    onClick = { galleryLauncher.launch("image/*") }, // Cambia el comportamiento según sea necesario
+                    onClick = { galleryLauncher.launch("img/*") }, // Cambia el comportamiento según sea necesario
                     modifier = Modifier.align(Alignment.End)
                 ) {
                     Text("Seleccionar Imagen")
@@ -357,7 +358,7 @@ fun OptionsButtons(
                 modifier = Modifier
                     .size(30.dp)
                     .background(
-                        color = Color.Black.copy(alpha = 0.2f),
+                        color = Color.Blue.copy(alpha = .6f),
                         shape = RoundedCornerShape(50.dp)
                     )
                     .padding(5.dp)
@@ -371,7 +372,7 @@ fun OptionsButtons(
                     Icon(
                         imageVector = Icons.Default.Edit,
                         contentDescription = "edit",
-                        tint = Color.Blue
+                        tint = Color.White
                     )
                 }
             }
@@ -380,7 +381,7 @@ fun OptionsButtons(
                 modifier = Modifier
                     .size(30.dp)
                     .background(
-                        color = Color.Black.copy(alpha = 0.2f),
+                        color = Color.Red.copy(alpha = .6f),
                         shape = RoundedCornerShape(50.dp)
                     )
                     .padding(5.dp)
@@ -395,7 +396,7 @@ fun OptionsButtons(
                     Icon(
                         imageVector = Icons.Default.Delete,
                         contentDescription = "delete",
-                        tint = Color.Red
+                        tint = Color.White
                     )
                 }
             }

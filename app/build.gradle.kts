@@ -84,4 +84,8 @@ dependencies {
     implementation(libs.hiltAndroid)
     implementation (libs.androidx.hilt.navigation.compose)
     kapt(libs.hiltCompiler)
+
+    implementation (libs.android.pdf.viewer)
+    implementation(libs.cloudinary.android)
+
 }

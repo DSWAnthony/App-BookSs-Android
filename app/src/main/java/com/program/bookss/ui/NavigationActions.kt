@@ -40,11 +40,6 @@ val TOP_LEVEL_DESTINATIONS = listOf(
         iconTextId = R.string.favorite
     ),
     MyAppTopLevelDestination(
-        route = MyAppRoute.Person,
-        selectedIcon = Icons.Default.Person,
-        iconTextId = R.string.person
-    ),
-    MyAppTopLevelDestination(
         route = MyAppRoute.Settings,
         selectedIcon = Icons.Default.Settings,
         iconTextId = R.string.setting
@@ -54,9 +49,11 @@ val TOP_LEVEL_DESTINATIONS = listOf(
 
 object MyAppRoute {
     const val Home = "home"
-    const val Person = "person"
     const val Favorite = "favorite"
     const val Settings = "settings"
 
     const val Books = "books"
+    const val Person = "person"
+
 }
+

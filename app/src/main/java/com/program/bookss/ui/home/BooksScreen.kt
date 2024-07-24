@@ -10,12 +10,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -25,15 +26,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.program.bookss.domain.model.Book
 import com.program.bookss.ui.Authentication.BookViewModel
-import com.program.bookss.ui.MyAppRoute
 import com.program.bookss.utils.Response
 
 
@@ -50,25 +49,28 @@ fun BooksScreen(
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
+        Spacer(modifier = Modifier.height(70.dp))
         Row(
             verticalAlignment = Alignment.CenterVertically, // Alinea verticalmente los elementos al centro
             modifier = Modifier.padding(start = 20.dp)
         ) {
-            ClickableText(
-                text = AnnotatedString("< Regresar"),
+
+            Button(
                 onClick = {
-                    navController.navigate(MyAppRoute.Home) {
-                        popUpTo(MyAppRoute.Books) {
-                            inclusive = true
-                        }
-                    }
+                    navController.popBackStack()
                 },
-                style = TextStyle(
-                    fontSize = 15.sp,
+                modifier = Modifier
+                    .padding(start = 5.dp)
+            ) {
+                Text(
+                    text = "< Regresar",
+                    style = MaterialTheme.typography.bodySmall,
                     fontFamily = FontFamily.Default,
-                    color = Color.Gray
+                    fontSize = 15.sp,
+                    color = Color.White,
+                    textAlign = TextAlign.Center
                 )
-            )
+            }
             if (role == "admin"){
                 Spacer(modifier = Modifier.weight(1f))
                 IconButton(
@@ -102,7 +104,7 @@ fun BooksScreen(
             }
             is Response.Error -> {
                 Text(
-                    text = "Error al cargar libros: ${(booksState as Response.Error).message}",
+                    text = "Error al cargar libros: ${(booksState).message}",
                     color = Color.Red,
                     modifier = Modifier.align(Alignment.CenterHorizontally)
                 )

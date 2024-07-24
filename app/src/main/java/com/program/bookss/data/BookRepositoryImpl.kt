@@ -1,6 +1,9 @@
 package com.program.bookss.data
 
+import android.graphics.Bitmap
+import android.graphics.pdf.PdfRenderer
 import android.net.Uri
+import android.os.ParcelFileDescriptor
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -15,6 +18,9 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.tasks.await
+import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
 import java.util.UUID
 import javax.inject.Inject
 
@@ -110,4 +116,8 @@ class BookRepositoryImpl @Inject constructor(
         }
 
     }
+
+
+
+
 }
